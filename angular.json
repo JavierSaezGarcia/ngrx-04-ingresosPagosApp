@@ -92,6 +92,16 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "ingresosPagosApp:build:production",
+            "firebaseProject": "ingresos-pagos-app-aa8c6",
+            "firebaseHostingSite": "ingresos-pagos-app-aa8c6"
+          }
         }
       }
     }

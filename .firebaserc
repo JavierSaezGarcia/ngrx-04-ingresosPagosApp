@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ingresos-pagos-app-aa8c6": {
+      "hosting": {
+        "ingresosPagosApp": [
+          "ingresos-pagos-app-aa8c6"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ingresos-pagos-app-aa8c6"
+  }
+}
