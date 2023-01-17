@@ -21,6 +21,8 @@ import { DetalleComponent } from './ingreso-pago/detalle/detalle.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
+import { provideFirestore } from '@angular/fire/firestore';
+import { getFirestore } from '@firebase/firestore';
 
 
 
@@ -47,10 +49,13 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
     AppRoutingModule,
     ReactiveFormsModule,    
     provideFirebaseApp(() => initializeApp(environment.firebase)),    
-    provideAuth( () => getAuth() )
+    provideAuth( () => getAuth() ),
+    provideFirestore(() => getFirestore())
 
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+

@@ -31,9 +31,9 @@ export class RegisterComponent implements OnInit {
 
     if( this.registroForm.invalid){ return; }
     
-    const { email, password } = this.registroForm.value;    
+    const { nombre, email, password } = this.registroForm.value;    
 
-    this.authService.crearUsuario( email, password )
+    this.authService.crearUsuario(nombre, email, password )
       .then( credenciales => {
         console.log( credenciales );     
          
