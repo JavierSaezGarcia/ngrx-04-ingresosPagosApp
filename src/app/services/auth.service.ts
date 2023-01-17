@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Auth, 
          authState, 
          createUserWithEmailAndPassword, 
-         signInWithEmailAndPassword } from '@angular/fire/auth';
+         signInWithEmailAndPassword
+        } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -44,7 +45,7 @@ export class AuthService {
     console.log({ email, password });    
     return signInWithEmailAndPassword(this.auth,email,password);
   }
-
+ 
   async logout() {
     await this.auth.signOut();
     await Swal.fire({
