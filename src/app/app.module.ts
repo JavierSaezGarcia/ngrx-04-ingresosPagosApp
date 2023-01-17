@@ -7,13 +7,9 @@ import { AppRoutingModule } from './app-routing.module';
 // Moodulos reactivos
 import { ReactiveFormsModule } from "@angular/forms";
 
-// angular fire
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-
 // firestore authentication
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
-
+import { provideAuth,getAuth } from '@angular/fire/auth';
+import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
@@ -50,9 +46,8 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,    
-    AngularFireModule.initializeApp(environment.firebase),    
-    AngularFirestoreModule,
-    AngularFireAuthModule
+    provideFirebaseApp(() => initializeApp(environment.firebase)),    
+    provideAuth( () => getAuth() )
 
   ],
   providers: [],
