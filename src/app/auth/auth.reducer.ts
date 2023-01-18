@@ -8,7 +8,7 @@ export interface State {
 }
 
 export const initialState: State = {
-   user: null
+    user: null
 }
 
 export const authReducer = createReducer(initialState,

@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
 // ngrx
-import { Store } from '@ngrx/store';
+import { Store, Action } from '@ngrx/store';
 import { AppState } from '../../app.reducer';
 import  * as ui from '../../shared/ui.actions';
 // modal alerts
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit,  OnDestroy {
                 private authService: AuthService,
                 private router: Router,
                 private store: Store<AppState>
-   ) {  }
+   ) {}
   
   ngOnInit(): void {
       
@@ -44,15 +44,14 @@ export class LoginComponent implements OnInit,  OnDestroy {
 
       this.uiSubscription = this.store.select('ui')
                               .subscribe( ui => {
-                                this.cargando = ui.isLoading; 
-                                console.log('cargando subs desde login');
+                                this.cargando = ui.isLoading;                              
+                                
                               });   
   }
-
   ngOnDestroy(): void {
     this.isShowButton = false;
     this.uiSubscription.unsubscribe();  
-    
+          
   }
 
 
@@ -61,16 +60,16 @@ export class LoginComponent implements OnInit,  OnDestroy {
     if( this.loginForm.invalid){ return; }
 
     this.store.dispatch( ui.isLoading() );
-
+    
     const { email, password } = this.loginForm.value;
 
     this.authService.loginUsuario( email, password )
-      .then(  credenciales => {
-        console.log( credenciales );     
-        this.store.dispatch( ui.stopLoading() );
+      .then( () => {          
+        
+        this.store.dispatch( ui.stopLoading() );   
+        this.cargando = false;         
         this.router.navigate(['/']);
-      }
-      )         
+      })         
       .catch((err: Error) =>                                      
                    Swal.fire({
                               icon: 'error',
@@ -78,15 +77,16 @@ export class LoginComponent implements OnInit,  OnDestroy {
                               text: err.message
                                       
                             }).then(()=> {
-                               this.isShowButton = false                        
-                            }))
-                            
+                               this.isShowButton = false;
+                               this.store.dispatch( ui.stopLoading())                     
+                            }))           
       
 
   }    
 
   toggleButton() {  
     this.isShowButton = !this.isShowButton;  
+    
   }  
 
 }
