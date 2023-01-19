@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import { Usuario } from '../models/usuario.model';
 
 // firestore de firebase
-import { Firestore, collection, addDoc, getDocsFromServer, getDoc, doc, setDoc } from '@angular/fire/firestore';
+import { collection, getDocsFromServer, doc, setDoc } from '@angular/fire/firestore';
 import { getFirestore } from "firebase/firestore"; 
 
 // ngrx
@@ -26,16 +26,18 @@ import { AppState } from '../app.reducer';
 export class AuthService {
    
   userSubscription!: Subscription;
+  userId?: string;
+  
 
+  
   constructor(
     private auth: Auth,
     private router: Router,
-    private firestore: Firestore,
     private store: Store<AppState>
     ) { }
 
   initAuthListener() {
-     
+    
     return authState(this.auth).subscribe(async (firestoreUsers) => {
       let userInfo:any = null;
       const db = getFirestore();
@@ -43,19 +45,22 @@ export class AuthService {
       const documento = collection(db, 'usuarios');
       const queryDoc = await getDocsFromServer(documento);
       const dataDoc = queryDoc.docs.map((doc) => doc.data());
- 
+      
       userInfo = dataDoc.filter((firestoreUsers) => {
         return firestoreUsers['uid'] === userId;
       });
+      if(userId){
+        console.log('dentro de userIdlength === 1', userId);
+        this.userId= userId;
+      }
       
-      if( userInfo[0] ){        
+      if( userInfo[0] ){    
         
-        const user = Usuario.fromFirebase( userInfo[0] )
-       
+        const user = Usuario.fromFirebase( userInfo[0] );         
         this.store.dispatch( authActions.setUser({ user }));
         
 
-      }else{
+      }else{       
         
         this.store.dispatch( authActions.unSetUser());
         
@@ -100,9 +105,7 @@ export class AuthService {
       this.auth.signOut();
       this.router.navigateByUrl('/login');
       
-    }
-      
-    )
+    })
      
   }
 
