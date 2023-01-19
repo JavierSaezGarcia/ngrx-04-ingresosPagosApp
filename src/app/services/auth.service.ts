@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import { Usuario } from '../models/usuario.model';
 
 // firestore de firebase
-import { Firestore, collection, addDoc, getDocsFromServer, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, getDocsFromServer, getDoc, doc, setDoc } from '@angular/fire/firestore';
 import { getFirestore } from "firebase/firestore"; 
 
 // ngrx
@@ -72,8 +72,17 @@ export class AuthService {
     return createUserWithEmailAndPassword(this.auth,email,password)
       .then( ({ user }) => {
         const newUser = new Usuario( user.uid, nombre, user.email );
-        const userRef = collection( this.firestore, `usuarios`);
-        return addDoc( userRef, {...newUser } );
+        const db = getFirestore();
+        
+        // return doc(this.firestore ,`${ newUser.uid }`, user.uid);
+        // quitando la ultima sentencia y añadiendo estas funcionaria
+
+        // en la siguiente sentencia dentro de collection va la bd y la uid del usuario que se loguea
+        // y en el cluod firestore a parecera la uid del usuario en la primera columna, la id del documento 
+        // en la segunda y en la tercera los campos del usuario
+        const userRef = doc( db, `${ user.uid }/usuario`);        
+        return setDoc( userRef , {...newUser } );
+        
       })   
   }
 
