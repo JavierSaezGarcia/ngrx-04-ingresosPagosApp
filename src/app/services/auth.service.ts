@@ -45,16 +45,21 @@ export class AuthService {
    
     return authState(this.auth).subscribe(async (fuser: any) => {     
       
-      
+      // Accedo al documento pasando como argumento la bd (this.firestore) y el path del documento
       const docRef = doc(this.firestore,`${ fuser.uid }/usuario`);
+      // LLamo al método getDoc() que devuelve una promesa y le paso como argumento el documento anterior getDoc(docRef)
       const docSnap = await getDoc(docRef);
+      // Accedo al documento actual asignandolo a una constante llamada (docSnap) y recojo sus datos con:
       const docData = docSnap.data()!;  
       
-      
-      if(docSnap.exists()){    
+      // si existe el documento...
+      if(docSnap.exists()){   
+        // asigno a una variable la id para usarla en otra parte 
         this.userId = docData['uid'];
-        // Accedo al metodo estatico y paso como argumento los campos del data
-        const user = Usuario.fromFirebase({uid: docData['uid'], email: docData['email'],nombre: docData['nombre']});           
+        // Accedo al metodo estatico y paso como argumento los campos del objeto docData. 
+        // Ojo revisar que esté correcto el modelo User o Usuario o como lo hayais llamado
+        const user = Usuario.fromFirebase({uid: docData['uid'], email: docData['email'],nombre: docData['nombre']});    
+        // seteo el dispatch       
         this.store.dispatch( authActions.setUser({ user }));
       }else{
         this.store.dispatch( authActions.unSetUser());
