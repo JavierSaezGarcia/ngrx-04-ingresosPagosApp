@@ -10,14 +10,14 @@ import Swal from 'sweetalert2';
 import { Usuario } from '../models/usuario.model';
 
 // firestore de firebase
-import { collection, getDocsFromServer, doc, setDoc, Firestore, DocumentData, getDoc } from '@angular/fire/firestore';
+import { doc, setDoc, Firestore, getDoc } from '@angular/fire/firestore';
 import { getFirestore } from "firebase/firestore"; 
 
 // ngrx
 import { Store } from '@ngrx/store';
 import * as authActions from '../auth/auth.actions';
 import { AppState } from '../app.reducer';
-import { compileClassMetadata } from '@angular/compiler';
+
 
 
 @Injectable({
@@ -27,7 +27,7 @@ import { compileClassMetadata } from '@angular/compiler';
 export class AuthService {
    
   userSubscription!: Subscription;
-  userId!: string;
+  userId!: string | undefined;
   
 
   
@@ -42,42 +42,23 @@ export class AuthService {
 
   initAuthListener() {
 
-    // authState(this.auth).subscribe( async fuser => {
-    //   console.log( fuser);     
-      
-      
-    //   if( fuser ) {
-
-    //     doc( this.firestore,`${ fuser.uid }/usuario` ).valueChanges()
-    //               .subscribe( (firestoreUser: any) => {
-    //                 console.log(firestoreUser);
-    //               })   
-                  
-    //     //this.store.dispatch(authActions.setUser({fuser}))
-
-    //   }else{
-    //     this.store.dispatch( authActions.unSetUser());
-
-    //   }
-      
-    // });
- 
+   
     return authState(this.auth).subscribe(async (fuser: any) => {     
       
-           
+      
       const docRef = doc(this.firestore,`${ fuser.uid }/usuario`);
       const docSnap = await getDoc(docRef);
-      const data = docSnap.data()!;     
+      const docData = docSnap.data()!;  
+      
       
       if(docSnap.exists()){    
-
-        const user = Usuario.fromFirebase({uid:data['uid'],email: data['email'],nombre: data['nombre']});   
-        
+        this.userId = docData['uid'];
+        // Accedo al metodo estatico y paso como argumento los campos del data
+        const user = Usuario.fromFirebase({uid: docData['uid'], email: docData['email'],nombre: docData['nombre']});           
         this.store.dispatch( authActions.setUser({ user }));
-
       }else{
         this.store.dispatch( authActions.unSetUser());
-      }      
+      }     
       
       
     });
@@ -91,7 +72,7 @@ export class AuthService {
     // console.log({ nombre, email, password });
     return createUserWithEmailAndPassword(this.auth,email,password)
       .then( ({ user }) => {
-        const newUser = new Usuario( user.uid, nombre, user.email );
+        const newUser = new Usuario( user.uid, nombre, email );
         const db = getFirestore();
         
         // return doc(this.firestore ,`${ newUser.uid }`, user.uid);

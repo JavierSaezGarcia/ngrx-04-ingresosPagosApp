@@ -3,7 +3,7 @@ import { isLoading, stopLoading } from './ui.actions';
 
 export interface State {
     isLoading: boolean;
-    
+        
 }
 
 export const initialState: State = {
@@ -14,7 +14,7 @@ export const initialState: State = {
 export const uiReducer = createReducer( initialState,
 
     on( isLoading, state   => ({ ...state, isLoading: true}) ),
-    on( stopLoading, state => ({ ...state, stopLoading: false}) )
+    on( stopLoading, state => ({ ...state, isLoading: false}) )
 
 );
 

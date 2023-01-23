@@ -9,7 +9,7 @@ export class Usuario {
     constructor(
         public uid: string,
         public nombre: string,
-        public email: any
+        public email: string
     ) { }
 
    

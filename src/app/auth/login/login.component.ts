@@ -13,6 +13,7 @@ import { AppState } from '../../app.reducer';
 import  * as ui from '../../shared/ui.actions';
 // modal alerts
 import Swal from 'sweetalert2';
+import { stopLoading } from '../../shared/ui.actions';
 
 
 
@@ -36,6 +37,7 @@ export class LoginComponent implements OnInit,  OnDestroy {
    ) {}
   
   ngOnInit(): void {
+    
       
       this.loginForm = this.fb.group({      
       email:    ['', [Validators.required, Validators.email]],
@@ -44,30 +46,36 @@ export class LoginComponent implements OnInit,  OnDestroy {
 
       this.uiSubscription = this.store.select('ui')
                               .subscribe( ui => {
-                                this.cargando = ui.isLoading;                              
+                                  this.cargando = ui.isLoading;                                                             
                                 
                               });   
   }
   ngOnDestroy(): void {
+    
     this.isShowButton = false;
+    this.store.dispatch( ui.stopLoading() );  
+    
     this.uiSubscription.unsubscribe();  
           
   }
+  
 
+  loginUsuario() {  
 
-  loginUsuario() {   
-
+    
     if( this.loginForm.invalid){ return; }
 
-    this.store.dispatch( ui.isLoading() );
+    this.store.dispatch( ui.isLoading() );  
     
     const { email, password } = this.loginForm.value;
 
     this.authService.loginUsuario( email, password )
-      .then( () => {          
+      .then( (credenciales) => {   
         
-        this.store.dispatch( ui.stopLoading() );   
-        this.cargando = false;         
+        console.log(credenciales);
+          
+        this.store.dispatch( ui.stopLoading() );          
+        this.cargando = false;        
         this.router.navigate(['/']);
       })         
       .catch((err: Error) =>                                      
@@ -78,7 +86,7 @@ export class LoginComponent implements OnInit,  OnDestroy {
                                       
                             }).then(()=> {
                                this.isShowButton = false;
-                               this.store.dispatch( ui.stopLoading())                     
+                               //this.store.dispatch( ui.stopLoading())                     
                             }))           
       
 
