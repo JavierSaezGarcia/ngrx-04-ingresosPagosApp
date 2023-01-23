@@ -2,14 +2,16 @@
 
 export class Usuario {
 
-    static fromFirebase( { uid, nombre, email }: {uid: string, nombre: string, email: string } ) {
-        return new Usuario( uid, nombre, email );
+    static fromFirebase({ uid, nombre,email }: {uid: string, nombre:string, email:string}): Usuario {
+        return new Usuario( uid,nombre,email );
     }
 
     constructor(
-        public uid: string | null | undefined,
+        public uid: string,
         public nombre: string,
-        public email: string | null | undefined
-    ) {}
+        public email: any
+    ) { }
+
+   
     
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, 
-         authState, 
+         authState,          
          createUserWithEmailAndPassword, 
          signInWithEmailAndPassword
         } from '@angular/fire/auth';
@@ -10,13 +10,14 @@ import Swal from 'sweetalert2';
 import { Usuario } from '../models/usuario.model';
 
 // firestore de firebase
-import { collection, getDocsFromServer, doc, setDoc } from '@angular/fire/firestore';
+import { collection, getDocsFromServer, doc, setDoc, Firestore, DocumentData, getDoc } from '@angular/fire/firestore';
 import { getFirestore } from "firebase/firestore"; 
 
 // ngrx
 import { Store } from '@ngrx/store';
 import * as authActions from '../auth/auth.actions';
 import { AppState } from '../app.reducer';
+import { compileClassMetadata } from '@angular/compiler';
 
 
 @Injectable({
@@ -26,51 +27,65 @@ import { AppState } from '../app.reducer';
 export class AuthService {
    
   userSubscription!: Subscription;
-  userId?: string;
+  userId!: string;
   
 
   
   constructor(
     private auth: Auth,
     private router: Router,
+    private firestore:Firestore,
     private store: Store<AppState>
     ) { }
 
-  initAuthListener() {
     
-    return authState(this.auth).subscribe(async (firestoreUsers) => {
-      let userInfo:any = null;
-      const db = getFirestore();
-      const userId = firestoreUsers?.uid;
-      const documento = collection(db, 'usuarios');
-      const queryDoc = await getDocsFromServer(documento);
-      const dataDoc = queryDoc.docs.map((doc) => doc.data());
-      
-      userInfo = dataDoc.filter((firestoreUsers) => {
-        return firestoreUsers['uid'] === userId;
-      });
-      if(userId){
-        console.log('dentro de userIdlength === 1', userId);
-        this.userId= userId;
-      }
-      
-      if( userInfo[0] ){    
-        
-        const user = Usuario.fromFirebase( userInfo[0] );         
-        this.store.dispatch( authActions.setUser({ user }));
-        
 
-      }else{       
+  initAuthListener() {
+
+    // authState(this.auth).subscribe( async fuser => {
+    //   console.log( fuser);     
+      
+      
+    //   if( fuser ) {
+
+    //     doc( this.firestore,`${ fuser.uid }/usuario` ).valueChanges()
+    //               .subscribe( (firestoreUser: any) => {
+    //                 console.log(firestoreUser);
+    //               })   
+                  
+    //     //this.store.dispatch(authActions.setUser({fuser}))
+
+    //   }else{
+    //     this.store.dispatch( authActions.unSetUser());
+
+    //   }
+      
+    // });
+ 
+    return authState(this.auth).subscribe(async (fuser: any) => {     
+      
+           
+      const docRef = doc(this.firestore,`${ fuser.uid }/usuario`);
+      const docSnap = await getDoc(docRef);
+      const data = docSnap.data()!;     
+      
+      if(docSnap.exists()){    
+
+        const user = Usuario.fromFirebase({uid:data['uid'],email: data['email'],nombre: data['nombre']});   
         
+        this.store.dispatch( authActions.setUser({ user }));
+
+      }else{
         this.store.dispatch( authActions.unSetUser());
-        
-      }
+      }      
+      
       
     });
     
   
   
-  }
+ 
+  } 
 
   crearUsuario( nombre: string, email:string, password: string) {
     // console.log({ nombre, email, password });
@@ -103,6 +118,7 @@ export class AuthService {
       title: 'Usuario desconectado'
     }).then( () => {
       this.auth.signOut();
+      this.store.dispatch( authActions.unSetUser());
       this.router.navigateByUrl('/login');
       
     })
@@ -120,3 +136,5 @@ export class AuthService {
   }
 
 }
+
+

@@ -33,15 +33,5 @@ export class IngresoPagoService {
       })
       .catch(err => Swal.fire('Error', err.message, 'error'))
 
-
-
-    // const userRef = doc( db, `${ uid }/items`); 
-    // return setDoc( userRef,{...ingresoPago } )
-    //                   .then(() => {
-
-    //                     Swal.fire('Registro creado', ingresoPago.descripcion, 'success')
-    //                   })  
-    //                   .catch( err => Swal.fire('Error', err.message, 'error'))    
-
   }
 }
